@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 
 const Drivers = () => {
     const [drivers, setDrivers] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('2024');
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ const Drivers = () => {
         const fetchDrivers = async () => {
             try {
                 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const response = await axios.get(`${API_URL}/api/drivers`);
+                const response = await axios.get(`${API_URL}/api/drivers?year=${selectedYear}`);
                 setDrivers(response.data);
             } catch (error) {
                 console.error('Error fetching drivers:', error);
@@ -25,14 +26,31 @@ const Drivers = () => {
         };
 
         fetchDrivers();
-    }, [user, navigate]);
+    }, [user, navigate, selectedYear]);
 
     return (
         <div className="min-h-screen pb-20">
             <Navbar />
 
             <div className="container mx-auto px-6 py-10">
-                <h2 className="text-4xl font-bold text-white mb-10 italic border-l-4 border-red-600 pl-4">2024 <span className="text-red-600">GRID</span></h2>
+                <div className="flex flex-col md:flex-row justify-between items-center mb-10 border-l-4 border-red-600 pl-4">
+                    <h2 className="text-4xl font-bold text-white italic">{selectedYear} <span className="text-red-600">GRID</span></h2>
+
+                    <div className="flex gap-2 mt-4 md:mt-0">
+                        {['2024', '2025', '2026'].map((year) => (
+                            <button
+                                key={year}
+                                onClick={() => setSelectedYear(year)}
+                                className={`px-4 py-1 rounded font-bold text-sm transition-all skew-x-[-10deg] ${selectedYear === year
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                    }`}
+                            >
+                                {year}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {drivers.map((driver) => (

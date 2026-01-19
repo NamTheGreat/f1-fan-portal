@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 
 const Dashboard = () => {
     const [races, setRaces] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('2024');
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ const Dashboard = () => {
         const fetchRaces = async () => {
             try {
                 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const response = await axios.get(`${API_URL}/api/races`);
+                const response = await axios.get(`${API_URL}/api/races?year=${selectedYear}`);
                 setRaces(response.data);
             } catch (error) {
                 console.error('Error fetching races:', error);
@@ -25,7 +26,7 @@ const Dashboard = () => {
         };
 
         fetchRaces();
-    }, [user, navigate]);
+    }, [user, navigate, selectedYear]);
 
     const getRaceImage = (country) => {
         // Placeholder logic for diverse images
@@ -41,7 +42,22 @@ const Dashboard = () => {
                 <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 italic tracking-tighter">
                     NEXT <span className="text-red-600">GRAND PRIX</span>
                 </h1>
-                <p className="text-slate-400 text-xl tracking-widest uppercase">2024 Season Calendar</p>
+                <p className="text-slate-400 text-xl tracking-widest uppercase mb-8">{selectedYear} Season Calendar</p>
+
+                <div className="flex justify-center gap-4">
+                    {['2024', '2025', '2026'].map((year) => (
+                        <button
+                            key={year}
+                            onClick={() => setSelectedYear(year)}
+                            className={`px-6 py-2 rounded font-bold transition-all skew-x-[-10deg] ${selectedYear === year
+                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50'
+                                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                }`}
+                        >
+                            {year}
+                        </button>
+                    ))}
+                </div>
             </header>
 
             <main className="container mx-auto px-6">

@@ -1,48 +1,31 @@
 const getRaces = (req, res) => {
-    const races = [
-        {
-            id: 1,
-            round: 1,
-            name: 'Bahrain Grand Prix',
-            circuit: 'Bahrain International Circuit',
-            date: '2024-03-02',
-            country: 'Bahrain',
-        },
-        {
-            id: 2,
-            round: 2,
-            name: 'Saudi Arabian Grand Prix',
-            circuit: 'Jeddah Corniche Circuit',
-            date: '2024-03-09',
-            country: 'Saudi Arabia',
-        },
-        {
-            id: 3,
-            round: 3,
-            name: 'Australian Grand Prix',
-            circuit: 'Albert Park Circuit',
-            date: '2024-03-24',
-            country: 'Australia',
-        },
-        {
-            id: 4,
-            round: 4,
-            name: 'Japanese Grand Prix',
-            circuit: 'Suzuka International Racing Course',
-            date: '2024-04-07',
-            country: 'Japan',
-        },
-        {
-            id: 5,
-            round: 5,
-            name: 'Chinese Grand Prix',
-            circuit: 'Shanghai International Circuit',
-            date: '2024-04-21',
-            country: 'China',
-        },
-    ];
+    const year = req.query.year || '2024';
 
-    res.status(200).json(races);
+    const racesDb = {
+        '2024': [
+            { id: 1, round: 1, name: 'Bahrain Grand Prix', circuit: 'Bahrain International Circuit', date: '2024-03-02', country: 'Bahrain' },
+            { id: 2, round: 2, name: 'Saudi Arabian Grand Prix', circuit: 'Jeddah Corniche Circuit', date: '2024-03-09', country: 'Saudi Arabia' },
+            { id: 3, round: 3, name: 'Australian Grand Prix', circuit: 'Albert Park Circuit', date: '2024-03-24', country: 'Australia' },
+            { id: 4, round: 4, name: 'Japanese Grand Prix', circuit: 'Suzuka International Racing Course', date: '2024-04-07', country: 'Japan' },
+            { id: 5, round: 5, name: 'Chinese Grand Prix', circuit: 'Shanghai International Circuit', date: '2024-04-21', country: 'China' },
+        ],
+        '2025': [
+            { id: 101, round: 1, name: 'Australian Grand Prix', circuit: 'Albert Park Circuit', date: '2025-03-16', country: 'Australia' },
+            { id: 102, round: 2, name: 'Chinese Grand Prix', circuit: 'Shanghai International Circuit', date: '2025-03-23', country: 'China' },
+            { id: 103, round: 3, name: 'Japanese Grand Prix', circuit: 'Suzuka International Racing Course', date: '2025-04-06', country: 'Japan' },
+            { id: 104, round: 4, name: 'Bahrain Grand Prix', circuit: 'Bahrain International Circuit', date: '2025-04-13', country: 'Bahrain' },
+            { id: 105, round: 5, name: 'Saudi Arabian Grand Prix', circuit: 'Jeddah Corniche Circuit', date: '2025-04-20', country: 'Saudi Arabia' },
+        ],
+        '2026': [
+            { id: 201, round: 1, name: 'Spanish Grand Prix', circuit: 'Circuit de Barcelona-Catalunya', date: '2026-03-08', country: 'Spain' },
+            { id: 202, round: 2, name: 'Canadian Grand Prix', circuit: 'Circuit Gilles Villeneuve', date: '2026-03-22', country: 'Canada' },
+            { id: 203, round: 3, name: 'Bahrain Grand Prix', circuit: 'Bahrain International Circuit', date: '2026-04-05', country: 'Bahrain' },
+            { id: 204, round: 4, name: 'Miami Grand Prix', circuit: 'Miami International Autodrome', date: '2026-05-03', country: 'USA' },
+            { id: 205, round: 5, name: 'Monaco Grand Prix', circuit: 'Circuit de Monaco', date: '2026-05-24', country: 'Monaco' },
+        ]
+    };
+
+    res.status(200).json(racesDb[year] || []);
 };
 
 const getRaceById = (req, res) => {
