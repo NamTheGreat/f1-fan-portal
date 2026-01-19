@@ -55,7 +55,39 @@ const getRaces = async (req, res) => {
     res.status(200).json(racesDb[year] || []);
 };
 
-const getRaceById = (req, res) => {
+const getRaceById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Fetch meeting details from OpenF1
+        const response = await fetch(`https://api.openf1.org/v1/meetings?meeting_key=${id}`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const meeting = data[0];
+
+            // OpenF1 doesn't provide these specific details, so we'll use generic/mock values or a lookup if we had one.
+            // For MVP, we'll keep these static or randomized to show the UI works.
+            const raceDetails = {
+                id: meeting.meeting_key,
+                round: meeting.meeting_key,
+                name: meeting.meeting_name,
+                circuit: meeting.circuit_short_name,
+                date: meeting.date_start,
+                country: meeting.country_name,
+                // Static/Mock extras
+                lapRecord: '1:30.000 (Mock Record)',
+                trivia: `The ${meeting.meeting_name} is one of the highlights of the ${meeting.year} season.`,
+                videoId: 'dQw4w9WgXcQ' // Rick Roll as placeholder or a generic F1 video
+            };
+
+            return res.status(200).json(raceDetails);
+        }
+    } catch (error) {
+        console.warn(`OpenF1 fetch failed for meeting ${id}, falling back to mock.`);
+    }
+
+    // Fallback if API fails or ID is from mock data range (1-5)
     const races = [
         {
             id: 1,
@@ -66,7 +98,7 @@ const getRaceById = (req, res) => {
             country: 'Bahrain',
             lapRecord: '1:31.447 (Pedro de la Rosa, 2005)',
             trivia: 'The first ever race of the 2024 season.',
-            videoId: 'sL2D82D9kC4' // Example video ID
+            videoId: 'sL2D82D9kC4'
         },
         {
             id: 2,
@@ -86,14 +118,13 @@ const getRaceById = (req, res) => {
     if (race) {
         res.status(200).json(race);
     } else {
-        // Return a generic race object if not found in detailed list, but exists in basic list
-        // For MVP, just return a mock object
+        // Return a generic race object if not found in detailed list
         res.status(200).json({
             id: req.params.id,
             name: 'Grand Prix Details',
             circuit: 'Unknown Circuit',
             lapRecord: '1:30.000 (Mock Driver)',
-            trivia: 'This is a mock detail view for MVP.',
+            trivia: 'Details not available in mock data.',
             videoId: 'dQw4w9WgXcQ'
         });
     }
