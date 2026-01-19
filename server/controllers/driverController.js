@@ -1,6 +1,48 @@
-const getDrivers = (req, res) => {
+const getDrivers = async (req, res) => {
     const year = req.query.year || '2024';
 
+    try {
+        // 1. Get the latest session for the year to get the most recent grid
+        const sessionsRes = await fetch(`https://api.openf1.org/v1/sessions?year=${year}&session_name=Race`);
+        const sessions = await sessionsRes.json();
+
+        if (sessions && sessions.length > 0) {
+            // Pick the last session in the list (most recent race of the year)
+            const lastSession = sessions[sessions.length - 1];
+
+            // 2. Fetch drivers for that session
+            const driversRes = await fetch(`https://api.openf1.org/v1/drivers?session_key=${lastSession.session_key}`);
+            const driversData = await driversRes.json();
+
+            if (driversData && driversData.length > 0) {
+                const drivers = driversData.map(d => ({
+                    id: d.driver_number,
+                    name: d.full_name,
+                    team: d.team_name,
+                    country: d.country_code,
+                    number: d.driver_number,
+                    points: 'N/A', // OpenF1 doesn't provide points
+                    image: d.headshot_url || 'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/2col/image.png'
+                }));
+
+                // Deduplicate by number
+                const uniqueDrivers = [];
+                const seen = new Set();
+                for (const d of drivers) {
+                    if (!seen.has(d.number)) {
+                        uniqueDrivers.push(d);
+                        seen.add(d.number);
+                    }
+                }
+
+                return res.status(200).json(uniqueDrivers);
+            }
+        }
+    } catch (error) {
+        console.warn(`OpenF1 fetch failed for driver year ${year}, falling back to mock data.`);
+    }
+
+    // Fallback Mock Data
     const driversDb = {
         '2024': [
             { id: 1, name: 'Max Verstappen', team: 'Red Bull Racing', country: 'Netherlands', number: 1, points: 454, image: 'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/2col/image.png' },

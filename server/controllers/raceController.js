@@ -1,6 +1,33 @@
-const getRaces = (req, res) => {
+const getRaces = async (req, res) => {
     const year = req.query.year || '2024';
 
+    try {
+        // Try fetching from OpenF1
+        const response = await fetch(`https://api.openf1.org/v1/meetings?year=${year}`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            // Map OpenF1 data to our format
+            const races = data.map(meeting => ({
+                id: meeting.meeting_key,
+                round: meeting.meeting_key, // OpenF1 doesn't strictly have 'round' in meetings, using key
+                name: meeting.meeting_name,
+                circuit: meeting.circuit_short_name,
+                date: meeting.date_start,
+                country: meeting.country_name
+            }));
+
+            // Deduplicate (OpenF1 might return duplicates for multi-day events if queried differently, but meetings should be unique)
+            // But just in case, let's sort by date
+            races.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            return res.status(200).json(races);
+        }
+    } catch (error) {
+        console.warn(`OpenF1 fetch failed for year ${year}, falling back to mock data.`);
+    }
+
+    // Fallback Mock Data
     const racesDb = {
         '2024': [
             { id: 1, round: 1, name: 'Bahrain Grand Prix', circuit: 'Bahrain International Circuit', date: '2024-03-02', country: 'Bahrain' },
