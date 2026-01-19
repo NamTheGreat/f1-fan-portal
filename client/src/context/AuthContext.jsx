@@ -16,15 +16,14 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const register = async (userData) => {
+    const register = async (formData) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-            if (response.data) {
-                localStorage.setItem('user', JSON.stringify(response.data));
-                setUser(response.data);
-            }
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await axios.post(`${API_URL}/api/auth/register`, formData);
+            setUser(response.data);
+            localStorage.setItem('user', JSON.stringify(response.data));
             return response.data;
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed');
@@ -34,15 +33,14 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = async (userData) => {
+    const login = async (formData) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', userData);
-            if (response.data) {
-                localStorage.setItem('user', JSON.stringify(response.data));
-                setUser(response.data);
-            }
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await axios.post(`${API_URL}/api/auth/login`, formData);
+            setUser(response.data);
+            localStorage.setItem('user', JSON.stringify(response.data));
             return response.data;
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');

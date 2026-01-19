@@ -26,7 +26,8 @@ const Forum = () => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const response = await axios.get('http://localhost:5000/api/posts', config);
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await axios.get(`${API_URL}/api/posts`, config);
             setPosts(response.data);
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -41,7 +42,8 @@ const Forum = () => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            await axios.post('http://localhost:5000/api/posts', { title, content }, config);
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            await axios.post(`${API_URL}/api/posts`, { title, content }, config);
             setTitle('');
             setContent('');
             fetchPosts();

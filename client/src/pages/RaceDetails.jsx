@@ -17,7 +17,8 @@ const RaceDetails = () => {
 
         const fetchRace = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/races/${id}`);
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const response = await axios.get(`${API_URL}/api/races/${id}`);
                 setRace(response.data);
             } catch (error) {
                 console.error('Error fetching race details:', error);

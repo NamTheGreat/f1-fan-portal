@@ -16,7 +16,8 @@ const Drivers = () => {
 
         const fetchDrivers = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/drivers');
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const response = await axios.get(`${API_URL}/api/drivers`);
                 setDrivers(response.data);
             } catch (error) {
                 console.error('Error fetching drivers:', error);
