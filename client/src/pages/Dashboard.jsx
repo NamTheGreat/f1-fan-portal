@@ -50,8 +50,8 @@ const Dashboard = () => {
                             key={year}
                             onClick={() => setSelectedYear(year)}
                             className={`px-6 py-2 rounded font-bold transition-all skew-x-[-10deg] ${selectedYear === year
-                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50'
-                                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                ? 'bg-red-600 text-white shadow-lg shadow-red-600/50'
+                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                                 }`}
                         >
                             {year}

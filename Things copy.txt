@@ -1,0 +1,9 @@
+render.com (backend)- 
+
+https://f1-fan-portal.onrender.com
+
+
+
+Vercel(frontend)-
+
+https://f1-fan-portal.vercel.app/login

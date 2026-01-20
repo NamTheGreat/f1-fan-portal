@@ -6,3 +6,9 @@ build
 coverage
 .vscode
 .idea
+
+# Python
+__pycache__
+*.pyc
+venv
+f1-data-service/cache

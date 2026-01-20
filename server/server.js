@@ -34,6 +34,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/races', require('./routes/raceRoutes'));
 app.use('/api/drivers', require('./routes/driverRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/telemetry', require('./routes/telemetryRoutes'));
 
 app.get('/', (req, res) => {
     res.send('F1 Fan Portal API is running');
