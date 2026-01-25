@@ -2,12 +2,21 @@ import os
 import fastf1
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_caching import Cache
 import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
 
-# Enable FastF1 cache for better performance
+# Configure Flask-Caching (Simple Cache for single instance)
+# In production with multiple workers, 'filesystem' or 'redis' is better,
+# but 'simple' works well with 1-2 workers and keeps RAM usage predictable.
+app.config['CACHE_TYPE'] = 'SimpleCache' 
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300 # 5 minutes default
+cache = Cache(app)
+
+# Enable FastF1 cache for better performance (Disk cache)
+# This persists across restarts if volume is persistent
 cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
 os.makedirs(cache_dir, exist_ok=True)
 fastf1.Cache.enable_cache(cache_dir)
@@ -17,7 +26,9 @@ def health():
     return jsonify({"status": "ok", "service": "F1 Data Service (FastF1)"})
 
 # ============ RACE SCHEDULE ============
+# ============ RACE SCHEDULE ============
 @app.route('/api/schedule/<int:year>')
+@cache.cached(timeout=3600)  # Cache for 1 hour
 def get_schedule(year):
     try:
         schedule = fastf1.get_event_schedule(year)
@@ -40,7 +51,9 @@ def get_schedule(year):
         return jsonify({"error": str(e)}), 500
 
 # ============ DRIVERS ============
+# ============ DRIVERS ============
 @app.route('/api/drivers/<int:year>')
+@cache.cached(timeout=3600)  # Cache for 1 hour
 def get_drivers(year):
     try:
         # Get the first race of the year to extract driver info
@@ -76,7 +89,9 @@ def get_drivers(year):
         return jsonify({"error": str(e)}), 500
 
 # ============ RACE DETAILS ============
+# ============ RACE DETAILS ============
 @app.route('/api/race/<int:year>/<int:round_num>')
+@cache.cached(timeout=3600)  # Cache for 1 hour
 def get_race(year, round_num):
     try:
         session = fastf1.get_session(year, round_num, 'R')
@@ -112,7 +127,9 @@ def get_race(year, round_num):
         return jsonify({"error": str(e)}), 500
 
 # ============ TELEMETRY ============
+# ============ TELEMETRY ============
 @app.route('/api/telemetry/<int:year>/<int:round_num>/<driver_id>')
+@cache.cached(timeout=1800)  # Cache for 30 minutes
 def get_telemetry(year, round_num, driver_id):
     try:
         session = fastf1.get_session(year, round_num, 'R')
