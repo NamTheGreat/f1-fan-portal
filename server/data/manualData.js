@@ -1,48 +1,62 @@
-// MANUAL DATA OVERRIDE
-// Use this file to provide custom data when USE_MANUAL_DATA is set to true in controllers.
+// =====================================================================
+// 📝 MANUAL DATA EDITOR
+// =====================================================================
+// This file allows you to:
+// 1. Add missing data (YouTube links, Lap Records, Trivia)
+// 2. Override API data (Change circuit names, dates, etc.)
+// 3. Create a full offline backup
+//
+// HOW TO USE:
+// - Find the race you want to edit by 'round' number.
+// - Add your data in the fields (lapRecord, videoId, etc.).
+// - This data will be MERGED with the live API data.
+// =====================================================================
 
 const manualRaces = [
     {
-        id: 1,
-        round: 1,
-        name: "Bahrain Grand Prix",
-        circuit: "Bahrain International Circuit",
-        country: "Bahrain",
-        date: "2024-03-02",
-        format: "conventional"
+        round: 1,  // Bahrain
+        // These fields OVERRIDE the API if filled:
+        // name: "Bahrain Grand Prix", 
+        // circuit: "Bahrain International Circuit",
+
+        // These fields FILL IN missing API data:
+        lapRecord: "1:31.447 - Pedro de la Rosa (2005)",
+        trivia: "The first F1 race in the Middle East, held in 2004.",
+        videoId: "dQw4w9WgXcQ" // YouTube Video ID (e.g., https://youtu.be/dQw4w9WgXcQ)
     },
     {
-        id: 2,
-        round: 2,
-        name: "Saudi Arabian Grand Prix",
-        circuit: "Jeddah Corniche Circuit",
-        country: "Saudi Arabia",
-        date: "2024-03-09",
-        format: "conventional"
+        round: 2, // Saudi Arabia
+        lapRecord: "1:30.734 - Lewis Hamilton (2021)",
+        trivia: "The Jeddah Corniche Circuit is the fastest street circuit on the calendar.",
+        videoId: ""
     },
-    // Add more races here...
+    {
+        round: 3, // Australia
+        lapRecord: "1:20.260 - Charles Leclerc (2022)",
+        trivia: "Held in Albert Park, it uses public roads.",
+        videoId: ""
+    },
+    // Copy this block for other rounds (4-24)...
+    {
+        round: 4, // Japan
+        lapRecord: "",
+        trivia: "",
+        videoId: ""
+    }
 ];
 
 const manualDrivers = [
     {
-        id: 1,
-        number: 1,
-        name: "Max Verstappen",
-        team: "Red Bull Racing",
-        country: "NED",
-        image: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/2col/image.png",
-        points: " " 
-    },
-    {
-        id: 11,
-        number: 11,
-        name: "Sergio Perez",
-        team: "Red Bull Racing",
-        country: "MEX",
-        image: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/S/SERPER01_Sergio_Perez/serper01.png.transform/2col/image.png",
+        number: 1, // Max Verstappen
+        // Override or Add missing info
+        // image: "https://custom-image-url.com/max.png",
         points: " "
     },
-    // Add more drivers here...
+    {
+        number: 44, // Lewis Hamilton
+        // image: "...",
+        points: " "
+    }
 ];
 
 module.exports = { manualRaces, manualDrivers };

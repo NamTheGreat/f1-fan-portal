@@ -17,9 +17,20 @@ const getDrivers = async (req, res) => {
 
     try {
         const response = await fetch(`${F1_DATA_SERVICE}/api/drivers/${year}`);
-        const data = await response.json();
+        let data = await response.json();
 
         if (response.ok) {
+            // MERGE LOGIC
+            // If manual data exists for a driver number, overlay it
+            if (Array.isArray(data)) {
+                data = data.map(driver => {
+                    const manual = manualDrivers.find(d => d.number == driver.number);
+                    if (manual) {
+                        return { ...driver, ...manual };
+                    }
+                    return driver;
+                });
+            }
             return res.status(200).json(data);
         } else {
             return res.status(response.status).json(data);

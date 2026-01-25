@@ -2,9 +2,15 @@ const F1_DATA_SERVICE = process.env.F1_DATA_SERVICE_URL || 'http://localhost:500
 const { manualRaces } = require('../data/manualData');
 
 // ==========================================
-// TOGGLE THIS TO 'true' TO USE MANUAL DATA
+// TOGGLE THIS TO 'true' TO FORCE FULL MANUAL MODE
 // ==========================================
 const USE_MANUAL_DATA = false;
+
+// ==========================================
+// TOGGLE THIS TO 'true' TO MERGE MANUAL DATA WITH API
+// (Fills in missing fields like videoId, trivia, etc.)
+// ==========================================
+const ENABLE_ENRICHMENT = true;
 
 const getRaces = async (req, res) => {
     // If manual mode is on, return local data immediately
@@ -17,9 +23,26 @@ const getRaces = async (req, res) => {
 
     try {
         const response = await fetch(`${F1_DATA_SERVICE}/api/schedule/${year}`);
-        const data = await response.json();
+        let data = await response.json();
 
         if (response.ok) {
+            // MERGE LOGIC
+            if (ENABLE_ENRICHMENT && Array.isArray(data)) {
+                data = data.map(race => {
+                    const manual = manualRaces.find(r => r.round === race.round);
+                    if (manual) {
+                        // Priority: Manual > API (for non-empty manual fields)
+                        return {
+                            ...race,
+                            ...manual, // Overrides API fields if they exist in manual
+                            // Ensure crucial IDs are preserved if manual didn't set them
+                            id: race.id,
+                            round: race.round
+                        };
+                    }
+                    return race;
+                });
+            }
             return res.status(200).json(data);
         } else {
             return res.status(response.status).json(data);
@@ -53,9 +76,27 @@ const getRaceById = async (req, res) => {
 
     try {
         const response = await fetch(`${F1_DATA_SERVICE}/api/race/${year}/${id}`);
-        const data = await response.json();
+        let data = await response.json();
 
         if (response.ok) {
+            // MERGE LOGIC for Single Race
+            if (ENABLE_ENRICHMENT) {
+                const manual = manualRaces.find(r => r.round == id);
+                if (manual) {
+                    data = {
+                        ...data,
+                        ...manual,
+                        lapRecord: manual.lapRecord || ' ',
+                        trivia: manual.trivia || ' ',
+                        videoId: manual.videoId || ' '
+                    };
+                } else {
+                    // Default blanks if no manual data found
+                    data.lapRecord = ' ';
+                    data.trivia = ' ';
+                    data.videoId = ' ';
+                }
+            }
             return res.status(200).json(data);
         } else {
             return res.status(response.status).json(data);
