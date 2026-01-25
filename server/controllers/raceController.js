@@ -28,14 +28,17 @@ const getRaces = async (req, res) => {
         if (response.ok) {
             // MERGE LOGIC
             if (ENABLE_ENRICHMENT && Array.isArray(data)) {
+                // Get manual data for this specific year
+                const yearManualRaces = manualRaces[year] || [];
+
                 data = data.map(race => {
-                    const manual = manualRaces.find(r => r.round === race.round);
+                    // Find matching race in that year's manual data
+                    const manual = yearManualRaces.find(r => r.round === race.round);
+
                     if (manual) {
-                        // Priority: Manual > API (for non-empty manual fields)
                         return {
                             ...race,
-                            ...manual, // Overrides API fields if they exist in manual
-                            // Ensure crucial IDs are preserved if manual didn't set them
+                            ...manual,
                             id: race.id,
                             round: race.round
                         };
@@ -81,7 +84,10 @@ const getRaceById = async (req, res) => {
         if (response.ok) {
             // MERGE LOGIC for Single Race
             if (ENABLE_ENRICHMENT) {
-                const manual = manualRaces.find(r => r.round == id);
+                // Get manual data for this specific year
+                const yearManualRaces = manualRaces[year] || [];
+                const manual = yearManualRaces.find(r => r.round == id);
+
                 if (manual) {
                     data = {
                         ...data,

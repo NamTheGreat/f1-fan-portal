@@ -1,62 +1,48 @@
 // =====================================================================
-// 📝 MANUAL DATA EDITOR
+// 📝 MANUAL DATA EDITOR (Year-Specific)
 // =====================================================================
-// This file allows you to:
-// 1. Add missing data (YouTube links, Lap Records, Trivia)
-// 2. Override API data (Change circuit names, dates, etc.)
-// 3. Create a full offline backup
+// This file organizes data by YEAR.
 //
 // HOW TO USE:
-// - Find the race you want to edit by 'round' number.
-// - Add your data in the fields (lapRecord, videoId, etc.).
-// - This data will be MERGED with the live API data.
+// 1. Find the YEAR you want to edit (e.g., "2024").
+// 2. Add races or drivers into that year's list.
+// 3. Data is merged with the live API for that specific year.
 // =====================================================================
 
-const manualRaces = [
-    {
-        round: 1,  // Bahrain
-        // These fields OVERRIDE the API if filled:
-        // name: "Bahrain Grand Prix", 
-        // circuit: "Bahrain International Circuit",
+const manualRaces = {
+    "2024": [
+        {
+            round: 1,  // Bahrain 2024
+            lapRecord: "1:31.447 - Pedro de la Rosa (2005)",
+            trivia: "The 2004 race was the first in the Middle East.",
+            videoId: "dQw4w9WgXcQ"
+        },
+        {
+            round: 2, // Saudi Arabia 2024
+            lapRecord: "1:30.734 - Lewis Hamilton (2021)",
+            trivia: "Fastest street circuit.",
+            videoId: ""
+        },
+        // Add more 2024 races...
+    ],
+    "2025": [
+        {
+            round: 1, // Australia 2025 (Example)
+            trivia: "Season opener for 2025.",
+        }
+    ]
+};
 
-        // These fields FILL IN missing API data:
-        lapRecord: "1:31.447 - Pedro de la Rosa (2005)",
-        trivia: "The first F1 race in the Middle East, held in 2004.",
-        videoId: "dQw4w9WgXcQ" // YouTube Video ID (e.g., https://youtu.be/dQw4w9WgXcQ)
-    },
-    {
-        round: 2, // Saudi Arabia
-        lapRecord: "1:30.734 - Lewis Hamilton (2021)",
-        trivia: "The Jeddah Corniche Circuit is the fastest street circuit on the calendar.",
-        videoId: ""
-    },
-    {
-        round: 3, // Australia
-        lapRecord: "1:20.260 - Charles Leclerc (2022)",
-        trivia: "Held in Albert Park, it uses public roads.",
-        videoId: ""
-    },
-    // Copy this block for other rounds (4-24)...
-    {
-        round: 4, // Japan
-        lapRecord: "",
-        trivia: "",
-        videoId: ""
-    }
-];
-
-const manualDrivers = [
-    {
-        number: 1, // Max Verstappen
-        // Override or Add missing info
-        // image: "https://custom-image-url.com/max.png",
-        points: " "
-    },
-    {
-        number: 44, // Lewis Hamilton
-        // image: "...",
-        points: " "
-    }
-];
+const manualDrivers = {
+    "2024": [
+        {
+            number: 1, // Max Verstappen
+            points: " "
+        }
+    ],
+    "2025": [
+        // Driver updates for 2025
+    ]
+};
 
 module.exports = { manualRaces, manualDrivers };

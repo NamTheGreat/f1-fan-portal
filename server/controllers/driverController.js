@@ -21,10 +21,13 @@ const getDrivers = async (req, res) => {
 
         if (response.ok) {
             // MERGE LOGIC
-            // If manual data exists for a driver number, overlay it
             if (Array.isArray(data)) {
+                // Get manual data for this specific year
+                const yearManualDrivers = manualDrivers[year] || [];
+
                 data = data.map(driver => {
-                    const manual = manualDrivers.find(d => d.number == driver.number);
+                    // Find match in that year's manual data
+                    const manual = yearManualDrivers.find(d => d.number == driver.number);
                     if (manual) {
                         return { ...driver, ...manual };
                     }
