@@ -35,7 +35,7 @@ CONFIG = {
                     "round": 1, 
                     "lapRecord": "1:31.447 - Pedro de la Rosa (2005)",
                     "trivia": "First race of the season under lights.",
-                    "videoId": "https://www.youtube.com/watch?v=9Y5wMpKXNK4"
+                    "videoId": "9Y5wMpKXNK4"
                     # "name": "Bahrain Grand Prix",
                     # "circuit": "Bahrain International Circuit",
                     # "country": "Bahrain",
