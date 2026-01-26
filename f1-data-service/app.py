@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_caching import Cache
 import pandas as pd
+from f1_data_config import CONFIG
 
 app = Flask(__name__)
 CORS(app)
@@ -30,11 +31,21 @@ def health():
 @app.route('/api/schedule/<int:year>')
 @cache.cached(timeout=3600)  # Cache for 1 hour
 def get_schedule(year):
+    # 1. GLOBAL OFF SWITCH
+    if not CONFIG["use_live_api"]:
+        return jsonify(CONFIG["manual_data"]["schedule"].get(str(year), []))
+
+    # 2. CHECK OVERRIDE MODE
+    mode = CONFIG["overrides"]["schedule"]
+    
+    if mode == "manual":
+        return jsonify(CONFIG["manual_data"]["schedule"].get(str(year), []))
+
     try:
+        # Fetch Live Data
         schedule = fastf1.get_event_schedule(year)
         races = []
         for idx, event in schedule.iterrows():
-            # Skip testing events
             if 'test' in event['EventName'].lower():
                 continue
             races.append({
@@ -46,6 +57,17 @@ def get_schedule(year):
                 'date': str(event['EventDate'])[:10] if pd.notna(event['EventDate']) else '',
                 'format': event['EventFormat']
             })
+        
+        # 3. MERGE LOGIC
+        if mode == "merge":
+            manual_races = CONFIG["manual_data"]["schedule"].get(str(year), [])
+            for manual_race in manual_races:
+                # Find matching race by round
+                for race in races:
+                    if race['round'] == manual_race['round']:
+                        race.update(manual_race) # Update with manual fields
+                        break
+        
         return jsonify(races)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -55,6 +77,14 @@ def get_schedule(year):
 @app.route('/api/drivers/<int:year>')
 @cache.cached(timeout=3600)  # Cache for 1 hour
 def get_drivers(year):
+    # 1. CHECK MODE
+    if not CONFIG["use_live_api"]:
+         return jsonify(CONFIG["manual_data"]["drivers"].get(str(year), []))
+         
+    mode = CONFIG["overrides"]["drivers"]
+    if mode == "manual":
+        return jsonify(CONFIG["manual_data"]["drivers"].get(str(year), []))
+
     try:
         # Get the first race of the year to extract driver info
         schedule = fastf1.get_event_schedule(year)
@@ -84,6 +114,16 @@ def get_drivers(year):
                 'image': driver_info.get('HeadshotUrl', ''),
                 'points': ' '  # FastF1 doesn't provide standings
             })
+            
+        # 3. MERGE LOGIC
+        if mode == "merge":
+            manual_drivers = CONFIG["manual_data"]["drivers"].get(str(year), [])
+            for manual_driver in manual_drivers:
+                for driver in drivers:
+                    if driver['number'] == manual_driver['number']:
+                        driver.update(manual_driver)
+                        break
+                        
         return jsonify(drivers)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -93,6 +133,9 @@ def get_drivers(year):
 @app.route('/api/race/<int:year>/<int:round_num>')
 @cache.cached(timeout=3600)  # Cache for 1 hour
 def get_race(year, round_num):
+    # Note: Race details are complex, usually we just merge specific fields
+    # We skip full "manual" mode for details to avoid re-writing 20 fields manually
+    
     try:
         session = fastf1.get_session(year, round_num, 'R')
         session.load(telemetry=False, weather=False, messages=False)
@@ -110,7 +153,7 @@ def get_race(year, round_num):
                 'time': str(row['Time']) if pd.notna(row['Time']) else 'N/A'
             })
         
-        return jsonify({
+        data = {
             'id': round_num,
             'round': round_num,
             'name': event['EventName'],
@@ -122,7 +165,16 @@ def get_race(year, round_num):
             'lapRecord': ' ',
             'trivia': ' ',
             'videoId': ' '
-        })
+        }
+        
+        # MERGE LOGIC
+        if CONFIG["use_live_api"] and CONFIG["overrides"]["race_details"] == "merge":
+             manual_races = CONFIG["manual_data"]["schedule"].get(str(year), [])
+             manual_race = next((r for r in manual_races if r['round'] == round_num), None)
+             if manual_race:
+                 data.update(manual_race)
+                 
+        return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
