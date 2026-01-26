@@ -33,14 +33,19 @@ CONFIG = {
                     "lapRecord": "1:31.447 - Pedro de la Rosa (2005)",
                     "trivia": "First race of the season under lights.",
                     "videoId": "dQw4w9WgXcQ"
-                },
-                {
-                    "round": 2,
-                    "trivia": "Fastest street circuit in F1."
                 }
             ],
             "2025": [
-                # Add 2025 overrides here
+                {
+                    "round": 1,
+                    "trivia": "Season opener in Australia."
+                }
+            ],
+            "2026": [
+                {
+                    "round": 1,
+                    "trivia": "New regulations era begins."
+                }
             ]
         },
 
@@ -52,6 +57,12 @@ CONFIG = {
                     # "name": "Super Max", # Uncomment to override name
                     "points": " " 
                 }
+            ],
+            "2025": [
+                # Drivers for 2025
+            ],
+            "2026": [
+                # Drivers for 2026
             ]
         }
     }
