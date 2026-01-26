@@ -33,8 +33,8 @@ CONFIG = {
             "2024": [
                 {
                     "round": 1, 
-                    "lapRecord": "1:31.447 - Pedro de la Rosa (2005)",
-                    "trivia": "First race of the season under lights.",
+                    "lapRecord": "1:32.608 - Max Verstappen",
+                    "trivia": "First race of the season under lights.1:31.447 - Pedro de la Rosa (2005)",
                     "videoId": "9Y5wMpKXNK4"
                     # "name": "Bahrain Grand Prix",
                     # "circuit": "Bahrain International Circuit",
