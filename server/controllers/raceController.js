@@ -10,7 +10,11 @@ const USE_MANUAL_DATA = false;
 // TOGGLE THIS TO 'true' TO MERGE MANUAL DATA WITH API
 // (Fills in missing fields like videoId, trivia, etc.)
 // ==========================================
-const ENABLE_ENRICHMENT = true;
+// ==========================================
+// TOGGLE THIS TO 'true' TO MERGE MANUAL DATA WITH API
+// (Fills in missing fields like videoId, trivia, etc.)
+// ==========================================
+const ENABLE_ENRICHMENT = false;
 
 const getRaces = async (req, res) => {
     // If manual mode is on, return local data immediately
